@@ -683,32 +683,38 @@ condensationGraph.forEach((neighbors, index) => {
     console.log(`${componentVertex}: ${componentVertices.join(', ')} -> ${neighborComponents.join(', ')}`);
 });
 
-condensationGraph.forEach((neighbors, index) => {
-    const startPoint = arrOfNode2[index];
+// Малювання ребер між компонентами
+const drawEdgesCond = (ctx, nodes) => (neighbors, index) => {
+    const startPoint = nodes[index];
     neighbors.forEach(neighborIndex => {
-        const endPoint = arrOfNode2[neighborIndex];
-        ctxCond.beginPath();
-        ctxCond.moveTo(startPoint.x, startPoint.y);
-        ctxCond.lineTo(endPoint.x, endPoint.y);
-        ctxCond.stroke();
+        const endPoint = nodes[neighborIndex];
+        ctx.beginPath();
+        ctx.moveTo(startPoint.x, startPoint.y);
+        ctx.lineTo(endPoint.x, endPoint.y);
+        ctx.stroke();
     });
-});
+};
 
-ctxCond.fillStyle = 'pink';
-ctxCond.strokeStyle = 'black';
-ctxCond.lineWidth = 1;
-condensationGraph.forEach((_, index) => {
+condensationGraph.forEach(drawEdgesCond(ctxCond, arrOfNode2));
+
+// Малювання вершин компонент
+const drawVertices = (ctx, nodes) => (_, index) => {
     const componentVertex = `C${index + 1}`;
-    const point = arrOfNode2[index];
-    ctxCond.beginPath();
-    ctxCond.arc(point.x, point.y, 20, 0, Math.PI * 2);
-    ctxCond.fill(); // Заливаємо вершину
-    ctxCond.stroke();
-    ctxCond.closePath();
-    ctxCond.fillStyle = 'white';
-    ctxCond.font = '18px Arial';
-    ctxCond.textAlign = 'center';
-    ctxCond.textBaseline = 'middle';
-    ctxCond.fillText(componentVertex, point.x, point.y);
-    ctxCond.fillStyle = 'pink';
-});
+    const point = nodes[index];
+    ctx.fillStyle = 'pink';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, 20, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.closePath();
+    ctx.fillStyle = 'white';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(componentVertex, point.x, point.y);
+    ctx.fillStyle = 'pink';
+};
+
+condensationGraph.forEach(drawVertices(ctxCond, arrOfNode2));
